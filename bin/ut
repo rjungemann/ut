@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'json'
+
+require_relative '../lib/ut'
+
+command = ARGV.shift
+ut      = Ut::Ut.new
+
+ut.send command, *ARGV unless command.nil? || command.empty?
+
