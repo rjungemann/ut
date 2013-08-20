@@ -25,6 +25,7 @@ environment variables.
 
     ut help
     ut list '<iteration_name>'
+    ut update '<story_number>'
     RALLY_PROJECT='ACME' ut list '<iteration_name>'
     ut add requirements US1234
     ut add all US1234

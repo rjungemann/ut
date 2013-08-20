@@ -29,6 +29,7 @@ module Ut
 Commands:
     ut help
     ut list '<iteration_name>'
+    ut update '<story_number>'
     RALLY_PROJECT='ACME' ut list '<iteration_name>'
     ut add requirements US1234
     ut add all US1234
@@ -57,6 +58,17 @@ Commands:
     end
 
     # Command
+    def update(story_name = nil)
+      if story_name.nil?
+        throw 'Story name must be provided.'
+      end
+
+      story = adapter.story_by_number story_name
+
+      populate_story story
+    end
+
+    # Command
     def add(kind = nil, story_name = nil)
       if kind.nil?
         throw 'Kind must be provided. Try "requirements", "all", ' +
@@ -77,7 +89,7 @@ Commands:
         adapter.add_tasks story, boilerplate_tasks
 
       elsif kind == 'bug_tasks'
-        adapter.add_tasks story, ['Triage', 1.0] + boilerplate_tasks
+        adapter.add_tasks story, [['Triage', 1.0]] + boilerplate_tasks
 
       elsif kind == 'boilerplate'
         adapter.add_tasks story, boilerplate_tasks
@@ -159,7 +171,7 @@ Commands:
             adapter.add_tasks_from_requirements story
 
           elsif input == ?2 # add bug tasks
-            adapter.add_tasks story, ['Triage', 1.0] + boilerplate_tasks
+            adapter.add_tasks story, [['Triage', 1.0]] + boilerplate_tasks
 
           elsif input == ?3 # add boilerplate
             adapter.add_tasks story, boilerplate_tasks
@@ -180,7 +192,9 @@ Commands:
           elsif input == ?7 # list all tasks
 
             adapter.tasks(story).each do |task|
-              state =  task.state == 'In-Progress' ? 'P' : task.state.split('')[0]
+              state =  task.state == 'In-Progress' ?
+                'P' :
+                task.state.split('')[0]
 
               puts "  * #{task.formatted_i_d} - #{state} - #{task.name}"
             end
