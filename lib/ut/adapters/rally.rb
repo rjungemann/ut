@@ -1,5 +1,22 @@
 require 'rally_rest_api'
 
+# Adapters respond to:
+#
+#   * iteration(iteration_name) #=> iteration_object
+#   * stories(iteration) #=> [story_object]
+#   * story_by_number(story_name) #=> [story_object]
+#   * add_tasks(story, pairs) #=> nil
+#   * add_task(story, name, estimate) #=> nil
+#   * delete_tasks(story) #=> nil
+#   * delete_task(story, name) #=> nil
+#
+# Story objects respond to:
+#
+#   * formatted_i_d #=> String
+#   * name #=> String
+#   * schedule_state #=> String
+#   * tasks #=> [String]
+#
 module Ut
 
   module Adapters
@@ -8,39 +25,6 @@ module Ut
 
       def initialize
         @cached_iterations = {}
-      end
-
-      def username
-        ENV['RALLY_USERNAME']
-      end
-
-      def password
-        ENV['RALLY_PASSWORD']
-      end
-
-      def base_url
-        ENV['BASE_URL'] || 'https://rally1.rallydev.com/slm'
-      end
-
-      def project_name
-        ENV['RALLY_PROJECT']
-      end
-
-      def rally
-        @rally ||= RallyRestAPI.new \
-          :username => username,
-          :password => password,
-          :base_url => base_url
-      end
-
-      def project
-        proj_name = project_name
-
-        puts "Fetching Rally project as #{proj_name}..."
-
-        @project ||= rally.find(:project) {
-          equal(:name, proj_name)
-        }.first
       end
 
       def iteration(iteration_name)
@@ -122,6 +106,41 @@ module Ut
         rally_story.tasks.each do |task|
           delete_task rally_story, task.name
         end
+      end
+
+      # HELPERS
+
+      def username
+        ENV['RALLY_USERNAME']
+      end
+
+      def password
+        ENV['RALLY_PASSWORD']
+      end
+
+      def base_url
+        ENV['RALLY_URL'] || 'https://rally1.rallydev.com/slm'
+      end
+
+      def project_name
+        ENV['RALLY_PROJECT']
+      end
+
+      def rally
+        @rally ||= RallyRestAPI.new \
+          :username => username,
+          :password => password,
+          :base_url => base_url
+      end
+
+      def project
+        proj_name = project_name
+
+        puts "Fetching Rally project as #{proj_name}..."
+
+        @project ||= rally.find(:project) {
+          equal(:name, proj_name)
+        }.first
       end
 
       def present_story(raw_story)

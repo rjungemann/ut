@@ -12,7 +12,11 @@ module Ut
     end
 
     # Command
-    def list(iteration_name)
+    def list(iteration_name = nil)
+      if iteration_name.nil?
+        throw 'Iteration name must be provided.'
+      end
+
       iteration = adapter.iteration iteration_name
       stories   = adapter.stories iteration
 
@@ -20,6 +24,63 @@ module Ut
         populate_story story
       end
     end
+
+    # Command
+    def add(kind = nil, story_name = nil)
+      if kind.nil?
+        throw 'Kind must be provided. Try "requirements", "all", ' +
+          '"bug_tasks", or "boilerplate"'
+      end
+
+      if story_name.nil?
+        throw 'Story name must be provided.'
+      end
+
+      story = adapter.story_by_number story_name
+
+      if kind == 'requirements'
+        adapter.add_tasks_from_requirements story
+
+      elsif kind == 'all'
+        adapter.add_tasks_from_requirements story
+        adapter.add_tasks story, boilerplate_tasks
+
+      elsif kind == 'bug_tasks'
+        adapter.add_tasks story, ['Triage', 1.0] + boilerplate_tasks
+
+      elsif kind == 'boilerplate'
+        adapter.add_tasks story, boilerplate_tasks
+
+      end
+    end
+
+    # Command
+    def delete(story_name = nil, task_name = nil)
+      if story_name.nil?
+        throw 'Story name must be provided.'
+      end
+
+      if task_name.nil?
+        throw 'Task name must be provided.'
+      end
+
+      story = adapter.story_by_number story_name
+
+      adapter.delete_task story, task_name
+    end
+
+    # Command
+    def delete_all(story_name)
+      if story_name.nil?
+        throw 'Story name must be provided.'
+      end
+
+      story = adapter.story_by_number story_name
+
+      adapter.delete_tasks story
+    end
+
+    # Helper methods
 
     def populate_story(story)
       id    = story.formatted_i_d
@@ -88,6 +149,8 @@ module Ut
 
           populate_story story
         end
+
+        print "\n"
       end
     end
 
