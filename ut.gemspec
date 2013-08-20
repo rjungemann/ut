@@ -18,5 +18,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec'
   gem.add_runtime_dependency 'rally_rest_api'
   gem.add_runtime_dependency 'nokogiri'
+  gem.add_runtime_dependency 'rainbow'
 end
 

@@ -2,6 +2,16 @@ require_relative 'ut/adapters/rally'
 
 module Ut
 
+  module Errors
+
+    class StoryNotFound < Exception
+    end
+
+    class TaskNotFound < Exception
+    end
+
+  end
+
   class Ut
 
     @@adapter_classes = [
@@ -9,6 +19,27 @@ module Ut
     ]
 
     def initialize
+    end
+
+    def help
+      puts %[Configuration:
+    In your ~/.zshrc or other config, set RALLY_USERNAME, RALLY_PASSWORD,
+    and RALLY_PROJECT.
+
+Commands:
+    ut help
+    ut list '<iteration_name>'
+    RALLY_PROJECT='ACME' ut list '<iteration_name>'
+    ut add requirements US1234
+    ut add all US1234
+    ut add bug_tasks US1234
+    ut add boilerplate US1234
+    ut delete US1234 '<task_name>'
+    ut delete_all '<task_name>'
+
+    # Bonus method
+    ut generate_rallycatrc # generate a ~/.rallycatrc from ut settings! 
+]
     end
 
     # Command
@@ -80,6 +111,14 @@ module Ut
       adapter.delete_tasks story
     end
 
+    def generate_rallycatrc
+      File.open File.join(ENV['HOME'], '.rallycatrc'), 'w' do |f|
+        f.puts "username: #{ENV['RALLY_USERNAME']}"
+        f.puts "password: #{ENV['RALLY_PASSWORD']}"
+        f.puts "project:  #{ENV['RALLY_PROJECT']}"
+      end
+    end
+
     # Helper methods
 
     def populate_story(story)
@@ -93,8 +132,10 @@ module Ut
       puts "[#{state}] #{id} - #{name}"
       print "\n"
 
-      story.tasks.each do |task|
-        puts "  * #{task}"
+      adapter.tasks(story).each do |task|
+        state =  task.state == 'In-Progress' ? 'P' : task.state.split('')[0]
+
+        puts "  * #{task.formatted_i_d} - #{state} - #{task.name}"
       end
 
       print "\n"
@@ -107,8 +148,9 @@ module Ut
         puts "  (4) add a new task"
         puts "  (5) delete a task"
         puts "  (6) delete all tasks"
-        puts "  (7) skip"
-        puts "  (8) exit"
+        puts "  (7) list all tasks"
+        puts "  (8) skip"
+        puts "  (9) exit"
 
         input = ask
 
@@ -123,22 +165,30 @@ module Ut
             adapter.add_tasks story, boilerplate_tasks
 
           elsif input == ?4 # add a new task
-            puts 'Name a task and hit enter:'
+            puts 'Enter a task name and hit enter:'
             name = ask
             adapter.add_task story, name, 1.0
 
           elsif input == ?5 # delete a task
-            puts 'Name a task and hit enter:'
+            puts 'Enter a task number (i.e. "TA1234") and hit enter:'
             name = ask
             adapter.delete_task story, name
 
           elsif input == ?6 # delete all tasks
             adapter.delete_tasks story
 
-          elsif input == ?7 # skip
+          elsif input == ?7 # list all tasks
+
+            adapter.tasks(story).each do |task|
+              state =  task.state == 'In-Progress' ? 'P' : task.state.split('')[0]
+
+              puts "  * #{task.formatted_i_d} - #{state} - #{task.name}"
+            end
+
+          elsif input == ?8 # skip
             return
 
-          elsif input == ?8 # exit
+          elsif input == ?9 # exit
             puts 'Exiting...'
             exit
 
