@@ -13,10 +13,7 @@ In fact it works well in concert either of the above!
 
     git clone https://github.com/thefifthcircuit/ut.git
     cd ut
-    gem build ut.gemspec
-    gem install ut-*.gem
-    rm ut-*.gem
-    rbenv rehash # if using rbenv
+    rake install
 
 Be sure to set the `RALLY_USERNAME`, `RALLY_PASSWORD`, and `RALLY_PROJECT`
 environment variables.
