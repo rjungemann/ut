@@ -108,11 +108,10 @@ module Ut
         requirements
       end
 
-      def add_tasks_from_requirements(story_number)
-        rally_story = story story_number
+      def add_tasks_from_requirements(rally_story)
         story_data  = present_story rally_story
 
-        log "Adding tasks from requirements for '#{story_number}'..."
+        log "Adding tasks from requirements for '#{rally_story.name}'..."
 
         story_data[:ac].each do |ac|
           add_task rally_story, ac, 1.0

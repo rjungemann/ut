@@ -1,3 +1,4 @@
+require 'nokogiri'
 require_relative 'ut/adapters/rally'
 
 module Ut
@@ -82,11 +83,27 @@ Commands:
       story = adapter.story_by_number story_name
 
       if kind == 'requirements'
-        adapter.add_tasks_from_requirements story
+        begin
+          adapter.add_tasks_from_requirements story
+
+        rescue NoMethodError => e
+          puts 'Could not parse requirements. Are they well-formed?'.color(:red)
+          puts 'Error encountered was:'.color(:red)
+          puts e.message.color(:red)
+          puts e.backtrace.join("\n").color(:red)
+        end
 
       elsif kind == 'all'
-        adapter.add_tasks_from_requirements story
-        adapter.add_tasks story, boilerplate_tasks
+        begin
+          adapter.add_tasks_from_requirements story
+          adapter.add_tasks story, boilerplate_tasks
+
+        rescue NoMethodError => e
+          puts 'Could not parse requirements. Are they well-formed?'.color(:red)
+          puts 'Error encountered was:'.color(:red)
+          puts e.message.color(:red)
+          puts e.backtrace.join("\n").color(:red)
+        end
 
       elsif kind == 'bug_tasks'
         adapter.add_tasks story, [['Triage', 1.0]] + boilerplate_tasks
@@ -161,7 +178,7 @@ Commands:
         puts "  (5) delete a task"
         puts "  (6) delete all tasks"
         puts "  (7) list all tasks"
-        puts "  (8) skip"
+        puts "  (8) next"
         puts "  (9) exit"
 
         input = ask
@@ -199,8 +216,8 @@ Commands:
               puts "  * #{task.formatted_i_d} - #{state} - #{task.name}"
             end
 
-          elsif input == ?8 # skip
-            return
+          elsif input == ?8 # next
+            break
 
           elsif input == ?9 # exit
             puts 'Exiting...'
@@ -209,7 +226,10 @@ Commands:
           end
 
         rescue NoMethodError => e
-          puts 'Could not populate story. Try again.'
+          puts "Could not populate story. Try again.".color(:red)
+          puts 'Error encountered was:'.color(:red)
+          puts e.message.color(:red)
+          puts e.backtrace.join("\n").color(:red)
 
           populate_story story
         end

@@ -118,8 +118,9 @@ module Ut
       end
 
       def tasks(rally_story)
-        tasks = rally_story.tasks
-        sorted_tasks = tasks.sort_by { |task| task.task_index }
+        tsks = rally_story.tasks
+        return [] unless tsks
+        sorted_tasks = tsks.sort_by { |task| task.task_index }
       end
 
     end
