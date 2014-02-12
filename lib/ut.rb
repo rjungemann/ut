@@ -40,7 +40,7 @@ Commands:
     ut delete_all '<task_name>'
 
     # Bonus method
-    ut generate_rallycatrc # generate a ~/.rallycatrc from ut settings! 
+    ut generate_rallycatrc # generate a ~/.rallycatrc from ut settings!
 ]
     end
 
@@ -240,14 +240,12 @@ Commands:
 
     def boilerplate_tasks
       tasks = [
-        ['Dev QA',      1.0],
+        ['Dev QA / Demo', 1.0],
         ['Code Review', 1.0]
       ]
 
       unless ENV['IS_PROD']
-        tasks << ['Deploy to am-test',  1.0]
         tasks << ['Confirm on am-test', 1.0]
-        tasks << ['QA Test',            1.0]
       end
 
       tasks
@@ -268,4 +266,3 @@ Commands:
   end
 
 end
-
