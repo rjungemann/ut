@@ -1,5 +1,6 @@
 require 'rally_rest_api'
 require 'rainbow'
+require 'rainbow/ext/string'
 
 module Ut
 

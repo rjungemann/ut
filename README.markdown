@@ -41,7 +41,6 @@ environment variables.
   * `RALLY_PROJECT='...' # required`
   * `RALLY_URL='...' # defaults to "https://rally1.rallydev.com/slm"`
   * `TALLY_ADAPTER='...' # defaults to "rally"`
-  * `IS_PROD='...' # defaults to false`
 
 ## Creating Your Own Adapter
 

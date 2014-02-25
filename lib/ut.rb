@@ -239,18 +239,12 @@ Commands:
     end
 
     def boilerplate_tasks
-      tasks = [
+      [
         ['Dev QA',      1.0],
-        ['Code Review', 1.0]
+        ['Code Review', 1.0],
+        ['Deploy to am-test',  1.0],
+        ['Confirm on am-test', 1.0]
       ]
-
-      unless ENV['IS_PROD']
-        tasks << ['Deploy to am-test',  1.0]
-        tasks << ['Confirm on am-test', 1.0]
-        tasks << ['QA Test',            1.0]
-      end
-
-      tasks
     end
 
     def ask(*args)
